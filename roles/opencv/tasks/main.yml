@@ -1,0 +1,70 @@
+- name: fetch path
+  command: which opencv_version
+  register: result
+  changed_when: false
+  failed_when: false
+- name: check path
+  set_fact:
+    installed: "{{ result.stdout == local_path + '/bin/opencv_version' }}"
+- name: fetch version
+  command: opencv_version
+  register: result
+  changed_when: false
+  failed_when: false
+  when: installed
+- name: check version
+  set_fact:
+    installed: "{{ result.stdout == opencv_version }}"
+  when: installed
+
+- name: install numpy
+  pip:
+    name: numpy
+    state: latest
+    executable: pip3
+    extra_args: --user
+  when: not installed
+- name: make tempdir
+  tempfile:
+    state: directory
+  register: tempdir
+  when: not installed
+- name: fetch source
+  unarchive:
+    src: "https://github.com/opencv/opencv/archive/{{ opencv_version }}.tar.gz"
+    dest: "{{ tempdir.path }}"
+    remote_src: yes
+  when: not installed
+- name: make builddir
+  file:
+    path: "{{ tempdir.path }}/build"
+    state: directory
+  when: not installed
+- name: configure
+  command: |
+    cmake ../opencv-{{ opencv_version }} \
+        -DCMAKE_INSTALL_PREFIX={{ local_path }} \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_WITH_DEBUG_INFO=OFF \
+        -DBUILD_TESTS=OFF \
+        -DBUILD_PERF_TESTS=OFF \
+        -DWITH_TBB=ON \
+        -DWITH_OPENCL=OFF \
+        -DWITH_OPENGL=OFF \
+        -DWITH_CUDA=OFF \
+        -DWITH_MATLAB=OFF \
+        -DBUILD_opencv_python2=OFF \
+        -DPYTHON3_EXECUTABLE={{ local_path }}/bin/python3
+  args:
+    chdir: "{{ tempdir.path }}/build"
+  when: not installed
+- name: build
+  command: "make -j{{ njobs }}"
+  args:
+    chdir: "{{ tempdir.path }}/build"
+  when: not installed
+- name: install
+  command: make install
+  args:
+    chdir: "{{ tempdir.path }}/build"
+  when: not installed

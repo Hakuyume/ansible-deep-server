@@ -1,8 +1,10 @@
 - hosts: all
   environment:
     PATH: "{{ local_path }}/bin:{{ ansible_env.PATH }}"
+    PYTHONUSERBASE: "{{ local_path }}"
   vars:
     njobs: "{{ansible_processor_count * ansible_processor_cores * 2}}"
   roles:
     - cmake
     - python
+    - opencv
