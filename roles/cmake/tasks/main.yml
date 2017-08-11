@@ -28,11 +28,25 @@
     dest: "{{ tempdir.path }}"
     remote_src: yes
   when: not installed
-- name: install
-  shell: |
-    mkdir -p {{ tempdir.path }}/build
-    cd {{ tempdir.path }}/build
+- name: make builddir
+  file:
+    path: "{{ tempdir.path }}/build"
+    state: directory
+  when: not installed
+- name: configure
+  command: |
     ../CMake-{{ cmake_version }}/bootstrap \
         --prefix={{ ansible_env.HOME }}/{{ local_path }}
-    make install -j$(nproc)
+  args:
+    chdir: "{{ tempdir.path }}/build"
+  when: not installed
+- name: build
+  command: "make -j{{ njobs }}"
+  args:
+    chdir: "{{ tempdir.path }}/build"
+  when: not installed
+- name: install
+  command: make install
+  args:
+    chdir: "{{ tempdir.path }}/build"
   when: not installed
