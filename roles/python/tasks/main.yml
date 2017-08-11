@@ -1,0 +1,41 @@
+- name: fetch path
+  command: which python3
+  register: result
+  changed_when: false
+  failed_when: false
+- name: check path
+  set_fact:
+    installed: "{{ result.stdout == ansible_env.HOME + '/' + local_path + '/bin/python3' }}"
+- name: fetch version
+  shell: python3 --version | perl -anE 'say $F[-1]'
+  register: result
+  changed_when: false
+  failed_when: false
+  when: installed
+- name: check version
+  set_fact:
+    installed: "{{ result.stdout == python_version }}"
+  when: installed
+
+- name: make tempdir
+  tempfile:
+    state: directory
+  register: tempdir
+  when: not installed
+- name: fetch source
+  unarchive:
+    src: "https://github.com/python/cpython/archive/v{{ python_version }}.tar.gz"
+    dest: "{{ tempdir.path }}"
+    remote_src: yes
+  when: not installed
+- name: install
+  shell: |
+    mkdir -p {{ tempdir.path }}/build
+    cd {{ tempdir.path }}/build
+    ../cpython-{{ python_version }}/configure \
+      --prefix={{ ansible_env.HOME }}/{{ local_path }} \
+      --enable-shared \
+      --with-threads \
+      LDFLAGS=-Wl,-rpath,{{ ansible_env.HOME }}/{{ local_path }}/lib
+    make install -j$(nproc)
+  when: not installed
