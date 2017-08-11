@@ -35,7 +35,7 @@
               export MPLBACKEND=agg
           fi
           function venv(){
-              local PYTHONVENV=$(mktemp -d XXXXXXXX)
+              local PYTHONVENV=$(mktemp --tmpdir -d XXXXXXXX)
               python3 -m venv --system-site-packages $PYTHONVENV
               PYTHONVENV=$PYTHONVENV bash
               rm -r $PYTHONVENV
