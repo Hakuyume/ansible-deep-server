@@ -5,7 +5,7 @@
   failed_when: false
 - name: check path
   set_fact:
-    installed: "{{ result.stdout == local_path + '/bin/opencv_version' }}"
+    installed: "{{ result.stdout == prefix + '/bin/opencv_version' }}"
 - name: fetch version
   command: opencv_version
   register: result
@@ -43,7 +43,7 @@
 - name: configure
   command: |
     cmake ../opencv-{{ opencv_version }} \
-        -DCMAKE_INSTALL_PREFIX={{ local_path }} \
+        -DCMAKE_INSTALL_PREFIX={{ prefix }} \
         -DCMAKE_BUILD_TYPE=Release \
         -DBUILD_WITH_DEBUG_INFO=OFF \
         -DBUILD_TESTS=OFF \
@@ -54,7 +54,7 @@
         -DWITH_CUDA=OFF \
         -DWITH_MATLAB=OFF \
         -DBUILD_opencv_python2=OFF \
-        -DPYTHON3_EXECUTABLE={{ local_path }}/bin/python3
+        -DPYTHON3_EXECUTABLE={{ prefix }}/bin/python3
   args:
     chdir: "{{ tempdir.path }}/build"
   when: not installed

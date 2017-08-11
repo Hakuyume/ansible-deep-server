@@ -1,1 +1,1 @@
-local_path: "{{ ansible_env.HOME }}/.local"
+prefix: "{{ ansible_env.HOME }}/.local"

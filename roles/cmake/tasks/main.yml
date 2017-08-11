@@ -5,7 +5,7 @@
   failed_when: false
 - name: check path
   set_fact:
-    installed: "{{ result.stdout == local_path + '/bin/cmake' }}"
+    installed: "{{ result.stdout == prefix + '/bin/cmake' }}"
 - name: fetch version
   shell: cmake --version | head -n1 | perl -anE 'say $F[-1]'
   register: result
@@ -36,7 +36,7 @@
 - name: configure
   command: |
     ../CMake-{{ cmake_version }}/bootstrap \
-        --prefix={{ local_path }}
+        --prefix={{ prefix }}
   args:
     chdir: "{{ tempdir.path }}/build"
   when: not installed
