@@ -8,3 +8,35 @@
     - cmake
     - python
     - opencv
+  tasks:
+    - name: bashrc
+      blockinfile:
+        path: "{{ ansible_env.HOME }}/.bashrc"
+        block: |
+          export LANG=en_US.utf8
+
+          if [[ -z $TMUX ]]; then
+             if $(tmux has-session); then
+                 exec tmux attach
+             else
+                 exec tmux
+             fi
+          fi
+
+          export PYTHONIOENCODING=utf8
+          if [[ -n $PYTHONVENV ]]; then
+              source $PYTHONVENV/bin/activate
+              pip install -U \
+                  cython \
+                  matplotlib \
+                  mock \
+                  nose \
+                  pillow
+              export MPLBACKEND=agg
+          fi
+          function venv(){
+              local PYTHONVENV=$(mktemp -d XXXXXXXX)
+              python3 -m venv --system-site-packages $PYTHONVENV
+              PYTHONVENV=$PYTHONVENV bash
+              rm -r $PYTHONVENV
+          }
