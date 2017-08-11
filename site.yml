@@ -8,6 +8,7 @@
     - cmake
     - python
     - opencv
+    - cuda
   tasks:
     - name: make git/completion
       file:

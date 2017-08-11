@@ -1,0 +1,44 @@
+- name: fetch path
+  command: which nvcc
+  environment:
+    PATH: "{{ prefix }}/cuda/bin:{{ ansible_env.PATH }}"
+  register: result
+  changed_when: false
+  failed_when: false
+- name: check path
+  set_fact:
+    installed: "{{ result.stdout == prefix + '/cuda/bin/nvcc' }}"
+- name: fetch version
+  shell: nvcc --version | tail -n1 | perl -anE 'say $F[-1]'
+  environment:
+    PATH: "{{ prefix }}/cuda/bin:{{ ansible_env.PATH }}"
+  register: result
+  changed_when: false
+  failed_when: false
+  when: installed
+- name: check version
+  set_fact:
+    installed: "{{ result.stdout == 'V' + cuda_version }}"
+  when: installed
+
+- name: make tempdir
+  tempfile:
+    state: directory
+  register: tempdir
+  when: not installed
+- name: copy cuda installer
+  copy:
+    src: "cuda_{{ cuda_version }}_375.26_linux.run"
+    dest: "{{ tempdir.path }}/cuda.run"
+  when: not installed
+- name: install cuda
+  command: "sh cuda.run --silent --toolkit --toolkitpath={{ prefix }}/cuda"
+  args:
+    chdir: "{{ tempdir.path }}"
+  when: not installed
+
+- name: install cudnn
+  unarchive:
+    src: cudnn-8.0-linux-x64-v6.0.tgz
+    dest: "{{ prefix }}"
+  when: not installed
