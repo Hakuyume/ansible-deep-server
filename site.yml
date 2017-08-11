@@ -9,6 +9,14 @@
     - python
     - opencv
   tasks:
+    - name: make git/completion
+      file:
+        path: "{{ prefix }}/share/git/completion"
+        state: directory
+    - name: git-prompt
+      get_url:
+        url: https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh
+        dest: "{{ prefix }}/share/git/completion"
     - name: tmux
       get_url:
         url: https://gist.githubusercontent.com/Hakuyume/e764018bc7dc2072dba43b02c7b489b9/raw/80c12398e45d2c66e871523d394273b78bba20bb/.tmux.conf
@@ -26,6 +34,9 @@
                  exec tmux
              fi
           fi
+
+          source {{ prefix }}/share/git/completion/git-prompt.sh
+          PS1='[\u@\h \W$(__git_ps1)]\$ '
 
           export PYTHONIOENCODING=utf8
           if [[ -n $PYTHONVENV ]]; then
