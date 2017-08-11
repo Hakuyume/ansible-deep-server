@@ -1,0 +1,53 @@
+- name: fetch path
+  command: which curl
+  register: result
+  changed_when: false
+  failed_when: false
+- name: check path
+  set_fact:
+    installed: "{{ result.stdout == prefix + '/bin/curl' }}"
+- name: fetch version
+  shell: curl --version | head -n1 | perl -anE 'say $F[1]'
+  register: result
+  changed_when: false
+  failed_when: false
+  when: installed
+- name: check version
+  set_fact:
+    installed: "{{ result.stdout == curl_version }}"
+  when: installed
+
+- name: make tempdir
+  tempfile:
+    state: directory
+  register: tempdir
+  when: not installed
+- name: fetch source
+  unarchive:
+    src: "https://curl.haxx.se/download/curl-{{ curl_version }}.tar.xz"
+    dest: "{{ tempdir.path }}"
+    remote_src: yes
+  when: not installed
+- name: make builddir
+  file:
+    path: "{{ tempdir.path }}/build"
+    state: directory
+  when: not installed
+- name: configure
+  command: |
+    ../curl-{{ curl_version }}/configure \
+        --prefix={{ prefix }} \
+        --enable-ipv6
+  args:
+    chdir: "{{ tempdir.path }}/build"
+  when: not installed
+- name: build
+  command: "make -j{{ njobs }}"
+  args:
+    chdir: "{{ tempdir.path }}/build"
+  when: not installed
+- name: install
+  command: make install
+  args:
+    chdir: "{{ tempdir.path }}/build"
+  when: not installed
