@@ -5,7 +5,7 @@
   failed_when: false
 - name: check path
   set_fact:
-    installed: "{{ result.stdout == ansible_env.HOME + '/' + local_path + '/bin/python3' }}"
+    installed: "{{ result.stdout == local_path + '/bin/python3' }}"
 - name: fetch version
   shell: python3 --version | perl -anE 'say $F[-1]'
   register: result
@@ -36,10 +36,10 @@
 - name: configure
   command: |
     ../cpython-{{ python_version }}/configure
-        --prefix={{ ansible_env.HOME }}/{{ local_path }}
+        --prefix={{ local_path }}
         --enable-shared
         --with-threads
-        LDFLAGS=-Wl,-rpath,{{ ansible_env.HOME }}/{{ local_path }}/lib
+        LDFLAGS=-Wl,-rpath,{{ local_path }}/lib
   args:
     chdir: "{{ tempdir.path }}/build"
   when: not installed

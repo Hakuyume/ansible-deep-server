@@ -5,7 +5,7 @@
   failed_when: false
 - name: check path
   set_fact:
-    installed: "{{ result.stdout == ansible_env.HOME + '/' + local_path + '/bin/cmake' }}"
+    installed: "{{ result.stdout == local_path + '/bin/cmake' }}"
 - name: fetch version
   shell: cmake --version | head -n1 | perl -anE 'say $F[-1]'
   register: result
@@ -36,7 +36,7 @@
 - name: configure
   command: |
     ../CMake-{{ cmake_version }}/bootstrap \
-        --prefix={{ ansible_env.HOME }}/{{ local_path }}
+        --prefix={{ local_path }}
   args:
     chdir: "{{ tempdir.path }}/build"
   when: not installed

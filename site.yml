@@ -1,6 +1,6 @@
 - hosts: all
   environment:
-    PATH: "{{ ansible_env.HOME }}/{{ local_path }}/bin:{{ ansible_env.PATH }}"
+    PATH: "{{ local_path }}/bin:{{ ansible_env.PATH }}"
   vars:
     njobs: "{{ansible_processor_count * ansible_processor_cores * 2}}"
   roles:
