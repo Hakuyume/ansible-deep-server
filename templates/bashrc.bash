@@ -8,6 +8,7 @@ if [[ -z $TMUX ]]; then
     fi
 fi
 
+source {{ prefix }}/share/git/completion/git-completion.bash
 source {{ prefix }}/share/git/completion/git-prompt.sh
 PS1='[\u@\h \W$(__git_ps1)]\$ '
 

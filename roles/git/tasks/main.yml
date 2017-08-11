@@ -1,0 +1,64 @@
+- name: fetch path
+  command: which git
+  register: result
+  changed_when: false
+  failed_when: false
+- name: check path
+  set_fact:
+    installed: "{{ result.stdout == prefix + '/bin/git' }}"
+- name: fetch version
+  shell: git --version | head -n1 | perl -anE 'say $F[-1]'
+  register: result
+  changed_when: false
+  failed_when: false
+  when: installed
+- name: check version
+  set_fact:
+    installed: "{{ result.stdout == git_version }}"
+  when: installed
+
+- name: make tempdir
+  tempfile:
+    state: directory
+  register: tempdir
+  when: not installed
+- name: fetch source
+  unarchive:
+    src: "https://github.com/git/git/archive/v{{ git_version }}.tar.gz"
+    dest: "{{ tempdir.path }}"
+    remote_src: yes
+  when: not installed
+- name: build
+  command: |
+    make \
+        prefix={{ prefix }} \
+        CURLDIR={{ prefix }} \
+        NO_R_TO_GCC_LINKER=1 \
+        all -j{{ njobs }}
+  args:
+    chdir: "{{ tempdir.path }}/git-{{ git_version }}"
+  when: not installed
+- name: install
+  command: |
+    make \
+        prefix={{ prefix }} \
+        CURLDIR={{ prefix }} \
+        NO_R_TO_GCC_LINKER=1 \
+        install
+  args:
+    chdir: "{{ tempdir.path }}/git-{{ git_version }}"
+  when: not installed
+- name: make completion directory
+  file:
+    path: "{{ prefix }}/share/git/completion"
+    state: directory
+  when: not installed
+- name: install completion
+  copy:
+    src: "{{ tempdir.path }}/git-{{ git_version }}/contrib/completion/{{ item }}"
+    dest: "{{ prefix }}/share/git/completion/{{ item }}"
+    remote_src: yes
+  with_items:
+    - git-completion.bash
+    - git-prompt.sh
+  when: not installed
