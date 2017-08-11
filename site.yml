@@ -1,0 +1,6 @@
+- hosts: all
+  environment:
+    PATH: "{{ ansible_env.HOME }}/{{ local_path }}/bin:{{ ansible_env.PATH }}"
+  roles:
+    - cmake
+    - python

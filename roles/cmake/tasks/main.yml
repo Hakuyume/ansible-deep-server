@@ -1,0 +1,38 @@
+- name: fetch path
+  command: which cmake
+  register: result
+  changed_when: false
+  failed_when: false
+- name: check path
+  set_fact:
+    installed: "{{ result.stdout == ansible_env.HOME + '/' + local_path + '/bin/cmake' }}"
+- name: fetch version
+  shell: cmake --version | head -n1 | perl -anE 'say $F[-1]'
+  register: result
+  changed_when: false
+  failed_when: false
+  when: installed
+- name: check version
+  set_fact:
+    installed: "{{ result.stdout == cmake_version }}"
+  when: installed
+
+- name: make tempdir
+  tempfile:
+    state: directory
+  register: tempdir
+  when: not installed
+- name: fetch source
+  unarchive:
+    src: "https://github.com/Kitware/CMake/archive/v{{ cmake_version }}.tar.gz"
+    dest: "{{ tempdir.path }}"
+    remote_src: yes
+  when: not installed
+- name: install
+  shell: |
+    mkdir -p {{ tempdir.path }}/build
+    cd {{ tempdir.path }}/build
+    ../CMake-{{ cmake_version }}/bootstrap \
+      --prefix={{ ansible_env.HOME }}/{{ local_path }}
+    make install -j$(nproc)
+  when: not installed
