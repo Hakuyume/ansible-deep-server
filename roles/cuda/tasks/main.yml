@@ -1,3 +1,15 @@
+- name: fetch driver version
+  shell: 'nvidia-smi | perl -n0E "say m/(?<=Driver Version: )(\d+)/"'
+  register: result
+  changed_when: false
+- name: set package versions
+  set_fact:
+    "{{ item }}": "{{ driver_versions[result.stdout|int][item] }}"
+  with_items:
+    - cuda_version
+    - cuda_installer
+    - cudnn_archive
+
 - name: fetch path
   command: which nvcc
   environment:
@@ -9,16 +21,14 @@
   set_fact:
     installed: "{{ result.stdout == prefix + '/cuda/bin/nvcc' }}"
 - name: fetch version
-  shell: nvcc --version | tail -n1 | perl -anE 'say $F[-1]'
-  environment:
-    PATH: "{{ prefix }}/cuda/bin:{{ ansible_env.PATH }}"
+  command: "perl -anE 'say $F[-1]' {{ prefix }}/cuda/version.txt"
   register: result
   changed_when: false
   failed_when: false
   when: installed
 - name: check version
   set_fact:
-    installed: "{{ result.stdout == 'V' + cuda_version }}"
+    installed: "{{ result.stdout == cuda_version }}"
   when: installed
 
 - name: make tempdir
@@ -28,17 +38,17 @@
   when: not installed
 - name: copy cuda installer
   copy:
-    src: "cuda_{{ cuda_version }}_375.26_linux.run"
-    dest: "{{ tempdir.path }}/cuda.run"
+    src: "{{ cuda_installer }}"
+    dest: "{{ tempdir.path }}"
   when: not installed
 - name: install cuda
-  command: "sh cuda.run --silent --toolkit --toolkitpath={{ prefix }}/cuda"
+  command: "sh {{ cuda_installer }} --silent --toolkit --toolkitpath={{ prefix }}/cuda"
   args:
     chdir: "{{ tempdir.path }}"
   when: not installed
 
 - name: install cudnn
   unarchive:
-    src: cudnn-8.0-linux-x64-v6.0.tgz
+    src: "{{ cudnn_archive }}"
     dest: "{{ prefix }}"
   when: not installed
