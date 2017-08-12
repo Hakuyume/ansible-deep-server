@@ -20,7 +20,6 @@
   get_url:
     url: "https://github.com/Kitware/CMake/archive/v{{ cmake_version }}.tar.gz"
     dest: "{{ cache_dir }}/cmake-{{ cmake_version }}.tar.gz"
-    remote_src: yes
   when: not installed
 - name: make tempdir
   tempfile:

@@ -20,7 +20,6 @@
   get_url:
     url: "https://github.com/git/git/archive/v{{ git_version }}.tar.gz"
     dest: "{{ cache_dir }}/git-{{ git_version }}.tar.gz"
-    remote_src: yes
   when: not installed
 - name: make tempdir
   tempfile:

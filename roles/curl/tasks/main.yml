@@ -20,7 +20,6 @@
   get_url:
     url: "https://curl.haxx.se/download/curl-{{ curl_version }}.tar.xz"
     dest: "{{ cache_dir }}"
-    remote_src: yes
   when: not installed
 - name: make tempdir
   tempfile:
