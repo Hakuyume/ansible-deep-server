@@ -10,7 +10,6 @@
   shell: cmake --version | head -n1 | perl -anE 'say $F[-1]'
   register: result
   changed_when: false
-  failed_when: false
   when: installed
 - name: check version
   set_fact:
