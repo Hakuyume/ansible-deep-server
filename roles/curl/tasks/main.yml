@@ -16,14 +16,20 @@
     installed: "{{ result.stdout == curl_version }}"
   when: installed
 
+- name: fetch source
+  get_url:
+    url: "https://curl.haxx.se/download/curl-{{ curl_version }}.tar.xz"
+    dest: "{{ cache_dir }}"
+    remote_src: yes
+  when: not installed
 - name: make tempdir
   tempfile:
     state: directory
   register: tempdir
   when: not installed
-- name: fetch source
+- name: extract source
   unarchive:
-    src: "https://curl.haxx.se/download/curl-{{ curl_version }}.tar.xz"
+    src: "{{ cache_dir }}/curl-{{ curl_version }}.tar.xz"
     dest: "{{ tempdir.path }}"
     remote_src: yes
   when: not installed

@@ -16,14 +16,20 @@
     installed: "{{ result.stdout == python_version }}"
   when: installed
 
+- name: fetch source
+  get_url:
+    url: "https://github.com/python/cpython/archive/v{{ python_version }}.tar.gz"
+    dest: "{{ cache_dir }}/cpython-{{ python_version }}.tar.gz"
+    remote_src: yes
+  when: not installed
 - name: make tempdir
   tempfile:
     state: directory
   register: tempdir
   when: not installed
-- name: fetch source
+- name: extract source
   unarchive:
-    src: "https://github.com/python/cpython/archive/v{{ python_version }}.tar.gz"
+    src: "{{ cache_dir }}/cpython-{{ python_version }}.tar.gz"
     dest: "{{ tempdir.path }}"
     remote_src: yes
   when: not installed

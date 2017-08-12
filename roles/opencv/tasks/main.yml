@@ -16,6 +16,12 @@
     installed: "{{ result.stdout == opencv_version }}"
   when: installed
 
+- name: fetch source
+  get_url:
+    url: "https://github.com/opencv/opencv/archive/{{ opencv_version }}.tar.gz"
+    dest: "{{ cache_dir }}/opencv-{{ opencv_version }}.tar.gz"
+    remote_src: yes
+  when: not installed
 - name: install numpy
   pip:
     name: numpy
@@ -28,9 +34,9 @@
     state: directory
   register: tempdir
   when: not installed
-- name: fetch source
+- name: extract source
   unarchive:
-    src: "https://github.com/opencv/opencv/archive/{{ opencv_version }}.tar.gz"
+    src: "{{ cache_dir }}/opencv-{{ opencv_version }}.tar.gz"
     dest: "{{ tempdir.path }}"
     remote_src: yes
   when: not installed

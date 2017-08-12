@@ -1,3 +1,4 @@
 dependencies:
+  - { role: cachedir }
   - { role: cmake }
   - { role: python }

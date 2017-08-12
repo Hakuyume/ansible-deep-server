@@ -5,8 +5,6 @@
   vars:
     njobs: "{{ansible_processor_count * ansible_processor_cores * 2}}"
   roles:
-    - curl
-    - cmake
     - git
     - python
     - opencv

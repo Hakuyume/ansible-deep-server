@@ -16,14 +16,20 @@
     installed: "{{ result.stdout == cmake_version }}"
   when: installed
 
+- name: fetch source
+  get_url:
+    url: "https://github.com/Kitware/CMake/archive/v{{ cmake_version }}.tar.gz"
+    dest: "{{ cache_dir }}/cmake-{{ cmake_version }}.tar.gz"
+    remote_src: yes
+  when: not installed
 - name: make tempdir
   tempfile:
     state: directory
   register: tempdir
   when: not installed
-- name: fetch source
+- name: extract source
   unarchive:
-    src: "https://github.com/Kitware/CMake/archive/v{{ cmake_version }}.tar.gz"
+    src: "{{ cache_dir }}/cmake-{{ cmake_version }}.tar.gz"
     dest: "{{ tempdir.path }}"
     remote_src: yes
   when: not installed

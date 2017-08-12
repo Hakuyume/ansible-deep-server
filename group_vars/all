@@ -1,1 +1,2 @@
 prefix: "{{ ansible_env.HOME }}/.local"
+cache_dir: "{{ ansible_env.HOME }}/.cache/ansible"

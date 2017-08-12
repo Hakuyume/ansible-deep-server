@@ -30,24 +30,23 @@
     installed: "{{ result.stdout == cuda_version }}"
   when: installed
 
-- name: make tempdir
-  tempfile:
-    state: directory
-  register: tempdir
-  when: not installed
 - name: copy cuda installer
   copy:
     src: "{{ cuda_installer }}"
-    dest: "{{ tempdir.path }}"
+    dest: "{{ cache_dir }}"
   when: not installed
 - name: install cuda
-  command: "sh {{ cuda_installer }} --silent --toolkit --toolkitpath={{ prefix }}/cuda"
-  args:
-    chdir: "{{ tempdir.path }}"
+  command: "sh {{ cache_dir }}/{{ cuda_installer }} --silent --toolkit --toolkitpath={{ prefix }}/cuda"
   when: not installed
 
+- name: copy cudnn archive
+  copy:
+    src: "{{ cuda_installer }}"
+    dest: "{{ cache_dir }}"
+  when: not installed
 - name: install cudnn
   unarchive:
-    src: "{{ cudnn_archive }}"
+    src: "{{ cache_dir }}/{{ cudnn_archive }}"
     dest: "{{ prefix }}"
+    remote_src: yes
   when: not installed
