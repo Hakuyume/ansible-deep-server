@@ -41,7 +41,7 @@
 
 - name: copy cudnn archive
   copy:
-    src: "{{ cuda_installer }}"
+    src: "{{ cudnn_archive }}"
     dest: "{{ cache_dir }}"
   when: not installed
 - name: install cudnn
