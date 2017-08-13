@@ -53,6 +53,8 @@
         -DBUILD_TESTS=OFF \
         -DBUILD_PERF_TESTS=OFF \
         -DWITH_TBB=ON \
+        -DTBB_ENV_INCLUDE={{ prefix }}/include \
+        -DTBB_ENV_LIB={{ prefix }}/lib/libtbb.so.2 \
         -DWITH_OPENCL=OFF \
         -DWITH_OPENGL=OFF \
         -DWITH_CUDA=OFF \
