@@ -63,6 +63,8 @@
         -DPYTHON3_EXECUTABLE={{ prefix }}/bin/python3
   args:
     chdir: "{{ tempdir.path }}/build"
+  environment:
+    CXXFLAGS: "-I{{ prefix }}/include -L{{ prefix }}/lib"
   when: not installed
 - name: build
   command: "make -j{{ njobs }}"
