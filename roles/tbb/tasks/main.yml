@@ -1,0 +1,39 @@
+- name: stat header directory
+  stat:
+    path: "{{ prefix }}/include/tbb"
+  register: result
+  changed_when: false
+- name: check header directory
+  set_fact:
+    installed: "{{ result.stat.exists }}"
+
+- name: fetch source
+  get_url:
+    url: "https://github.com/01org/tbb/archive/{{ tbb_version }}.tar.gz"
+    dest: "{{ cache_dir }}/tbb-{{ tbb_version }}.tar.gz"
+  when: not installed
+- name: make tempdir
+  tempfile:
+    state: directory
+  register: tempdir
+  when: not installed
+- name: extract source
+  unarchive:
+    src: "{{ cache_dir }}/tbb-{{ tbb_version }}.tar.gz"
+    dest: "{{ tempdir.path }}"
+    remote_src: yes
+  when: not installed
+- name: build
+  command: "make -j{{ njobs }}"
+  args:
+    chdir: "{{ tempdir.path }}/tbb-{{ tbb_version }}"
+  when: not installed
+- name: install
+  shell: |
+    mkdir -p {{ prefix }}/include
+    cp -a include/tbb {{ prefix }}/include/
+    mkdir -p {{ prefix }}/lib
+    cp -a build/linux_*_release/*.so* {{ prefix }}/lib/
+  args:
+    chdir: "{{ tempdir.path }}/tbb-{{ tbb_version }}"
+  when: not installed
