@@ -20,7 +20,9 @@ if [[ -n $PYTHONVENV ]]; then
         matplotlib \
         mock \
         nose \
-        pillow
+        pillow \
+        pip \
+        setuptools
     export MPLBACKEND=agg
 fi
 function venv(){
