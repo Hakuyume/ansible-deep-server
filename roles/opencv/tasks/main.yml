@@ -32,6 +32,12 @@
     dest: "{{ tempdir.path }}"
     remote_src: yes
   when: not installed
+- name: apply patch
+  patch:
+    src: openblas.patch
+    basedir: "{{ tempdir.path }}/opencv-{{ opencv_version }}"
+    strip: 1
+  when: not installed
 - name: make builddir
   file:
     path: "{{ tempdir.path }}/build"
@@ -46,8 +52,6 @@
         -DBUILD_TESTS=OFF \
         -DBUILD_PERF_TESTS=OFF \
         -DWITH_TBB=ON \
-        -DTBB_ENV_INCLUDE={{ prefix }}/include \
-        -DTBB_ENV_LIB={{ prefix }}/lib/libtbb.so.2 \
         -DWITH_OPENCL=OFF \
         -DWITH_OPENGL=OFF \
         -DWITH_CUDA=OFF \
@@ -57,7 +61,8 @@
   args:
     chdir: "{{ tempdir.path }}/build"
   environment:
-    CXXFLAGS: "-I{{ prefix }}/include -L{{ prefix }}/lib"
+    CPATH: "{{ prefix }}/include"
+    LIBRARY_PATH: "{{ prefix }}/lib"
   when: not installed
 - name: build
   command: "make -j{{ njobs }}"

@@ -1,0 +1,17 @@
+diff -aur opencv-3.3.0.orig/cmake/OpenCVFindLAPACK.cmake opencv-3.3.0/cmake/OpenCVFindLAPACK.cmake
+--- opencv-3.3.0.orig/cmake/OpenCVFindLAPACK.cmake	2017-09-27 01:55:55.829277458 +0900
++++ opencv-3.3.0/cmake/OpenCVFindLAPACK.cmake	2017-09-27 02:01:22.686985977 +0900
+@@ -79,10 +79,10 @@
+       endif()
+     endif()
+     if(NOT LAPACK_LIBRARIES)
+-      include(cmake/OpenCVFindOpenBLAS.cmake)
++      find_package(OpenBLAS)
+       if(OpenBLAS_FOUND)
+-        set(LAPACK_INCLUDE_DIR  ${OpenBLAS_INCLUDE_DIR})
+-        set(LAPACK_LIBRARIES    ${OpenBLAS_LIB})
++        set(LAPACK_INCLUDE_DIR  ${OpenBLAS_INCLUDE_DIRS})
++        set(LAPACK_LIBRARIES    ${OpenBLAS_LIBRARIES})
+         set(LAPACK_CBLAS_H      "cblas.h")
+         set(LAPACK_LAPACKE_H    "lapacke.h")
+         set(LAPACK_IMPL         "OpenBLAS")
