@@ -33,3 +33,12 @@
   args:
     chdir: "{{ tempdir.path }}/OpenBLAS-{{ openblas_version }}"
   when: not installed
+- name: create symlink
+  file:
+    src: libopenblas.so
+    dest: "{{ prefix }}/lib/lib{{ item[0] }}.so{{ item[1] }}"
+    state: link
+  with_nested:
+    - ['blas', 'cblas', 'lapack', 'lapacke']
+    - ['', ".{{ lapack_version[0] }}", ".{{ lapack_version|join('.') }}"]
+  when: not installed

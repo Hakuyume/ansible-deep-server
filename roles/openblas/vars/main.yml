@@ -1,1 +1,2 @@
 openblas_version: 0.2.20
+lapack_version: [3, 7, 0]
