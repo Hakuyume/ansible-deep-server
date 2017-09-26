@@ -1,0 +1,35 @@
+- name: find version
+  shell: grep "OpenBLAS {{ openblas_version }}" "{{ prefix }}/include/openblas_config.h"
+  register: result
+  changed_when: false
+  failed_when: false
+- name: check version
+  set_fact:
+    installed: "{{ result|success }}"
+
+- name: fetch source
+  get_url:
+    url: "http://github.com/xianyi/OpenBLAS/archive/v{{ openblas_version }}.tar.gz"
+    dest: "{{ cache_dir }}/openblas-{{ openblas_version }}.tar.gz"
+  when: not installed
+- name: make tempdir
+  tempfile:
+    state: directory
+  register: tempdir
+  when: not installed
+- name: extract source
+  unarchive:
+    src: "{{ cache_dir }}/openblas-{{ openblas_version }}.tar.gz"
+    dest: "{{ tempdir.path }}"
+    remote_src: yes
+  when: not installed
+- name: build
+  command: "make -j{{ njobs }}"
+  args:
+    chdir: "{{ tempdir.path }}/OpenBLAS-{{ openblas_version }}"
+  when: not installed
+- name: install
+  command: "make PREFIX={{ prefix }} install"
+  args:
+    chdir: "{{ tempdir.path }}/OpenBLAS-{{ openblas_version }}"
+  when: not installed
