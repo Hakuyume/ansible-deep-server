@@ -30,7 +30,7 @@ This is an ansible config for deep learning server.
 ## Usage
 
 1. Edit `hosts`
-1. Download CUDA files under `roles/cuda/files/'.
+1. Download CUDA files under `roles/cuda/files/`.
 1. Run
     ```
     $ ansible-playbook -i hosts site.yml
