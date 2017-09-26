@@ -1,0 +1,30 @@
+- name: fetch version
+  shell: python3 -c 'import numpy; print(numpy.__version__)'
+  register: result
+  changed_when: false
+  failed_when: false
+- name: check version
+  set_fact:
+    installed: "{{ result.stdout == numpy_version }}"
+
+- name: fetch source
+  get_url:
+    url: "https://github.com/numpy/numpy/releases/download/v{{ numpy_version }}/numpy-{{ numpy_version }}.tar.gz"
+    dest: "{{ cache_dir }}/numpy-{{ numpy_version }}.tar.gz"
+  when: not installed
+- name: make tempdir
+  tempfile:
+    state: directory
+  register: tempdir
+  when: not installed
+- name: extract source
+  unarchive:
+    src: "{{ cache_dir }}/numpy-{{ numpy_version }}.tar.gz"
+    dest: "{{ tempdir.path }}"
+    remote_src: yes
+  when: not installed
+- name: install
+  command: python3 setup.py install
+  args:
+    chdir: "{{ tempdir.path }}/numpy-{{ numpy_version }}"
+  when: not installed

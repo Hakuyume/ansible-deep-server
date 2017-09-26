@@ -7,6 +7,7 @@
   roles:
     - python
     - git
+    - numpy
     - opencv
     - cuda
   tasks:

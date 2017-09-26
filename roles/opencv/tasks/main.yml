@@ -21,13 +21,6 @@
     url: "https://github.com/opencv/opencv/archive/{{ opencv_version }}.tar.gz"
     dest: "{{ cache_dir }}/opencv-{{ opencv_version }}.tar.gz"
   when: not installed
-- name: install numpy
-  pip:
-    name: numpy
-    state: latest
-    executable: pip3
-    extra_args: --user
-  when: not installed
 - name: make tempdir
   tempfile:
     state: directory

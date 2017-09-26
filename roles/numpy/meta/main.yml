@@ -1,6 +1,4 @@
 dependencies:
   - { role: cachedir }
-  - { role: cmake }
-  - { role: tbb }
   - { role: python }
-  - { role: numpy }
+  - { role: openblas }
