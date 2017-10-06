@@ -1,11 +1,11 @@
 - name: find version
-  shell: grep "OpenBLAS {{ openblas_version }}" "{{ prefix }}/include/openblas_config.h"
+  command: "grep 'OpenBLAS {{ openblas_version }}' {{ prefix }}/include/openblas_config.h"
   register: result
   changed_when: false
   failed_when: false
 - name: check version
   set_fact:
-    installed: "{{ result|success }}"
+    installed: "{{ result.rc == 0 }}"
 
 - name: fetch source
   get_url:
