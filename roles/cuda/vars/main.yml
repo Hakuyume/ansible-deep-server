@@ -15,3 +15,7 @@ driver_versions:
     cuda_version: 8.0.61
     cuda_installer: cuda_8.0.61_375.26_linux.run
     cudnn_archive: cudnn-8.0-linux-x64-v6.0.tgz
+  387:
+    cuda_version: 9.1.85
+    cuda_installer: cuda_9.1.85_387.26_linux.run
+    cudnn_archive: cudnn-9.1-linux-x64-v7.tgz
