@@ -4,4 +4,3 @@ dependencies:
   - { role: tbb }
   - { role: openblas }
   - { role: python }
-  - { role: numpy }
