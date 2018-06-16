@@ -9,6 +9,7 @@
     - cuda_version
     - cuda_installer
     - cudnn_archive
+    - nccl_archive
 
 - name: fetch path
   command: which nvcc
@@ -38,6 +39,12 @@
 - name: install cuda
   command: "sh {{ cache_dir }}/{{ cuda_installer }} --silent --toolkit --toolkitpath={{ prefix }}/cuda"
   when: not installed
+- name: create symlink
+  file:
+    src: lib64
+    dest: "{{ prefix }}/cuda/lib"
+    state: link
+  when: not installed
 
 - name: copy cudnn archive
   copy:
@@ -49,4 +56,19 @@
     src: "{{ cache_dir }}/{{ cudnn_archive }}"
     dest: "{{ prefix }}"
     remote_src: yes
+  when: not installed
+
+- name: copy nccl archive
+  copy:
+    src: "{{ nccl_archive }}"
+    dest: "{{ cache_dir }}"
+  when: not installed
+- name: install nccl
+  unarchive:
+    src: "{{ cache_dir }}/{{ nccl_archive }}"
+    dest: "{{ prefix }}/cuda"
+    remote_src: yes
+    extra_opts:
+      - --keep-directory-symlink
+      - --strip-components=1
   when: not installed

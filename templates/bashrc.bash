@@ -36,4 +36,4 @@ CUDA_PATH={{ prefix }}/cuda
 if echo $PATH | grep -v $CUDA_PATH > /dev/null; then
     export PATH="$CUDA_PATH/bin:$PATH"
 fi
-export LD_LIBRARY_PATH="$CUDA_PATH/lib64"
+export LD_LIBRARY_PATH="$CUDA_PATH/lib"
