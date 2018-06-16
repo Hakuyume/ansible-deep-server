@@ -10,6 +10,7 @@
     - numpy
     - opencv
     - cuda
+    - openmpi
   tasks:
     - name: tmux
       get_url:
