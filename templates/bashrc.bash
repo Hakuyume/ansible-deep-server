@@ -22,6 +22,7 @@ if [[ -n $PYTHONVENV ]]; then
         nose \
         pillow \
         pip \
+        pytest \
         setuptools
     export MPLBACKEND=agg
 fi
